@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    environment:
+      - DATABASE_PATH=/data/test_users.db
+    volumes:
+      - dbdata:/data
+    restart: unless-stopped
+
+volumes:
+  dbdata:
