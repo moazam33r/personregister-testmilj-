@@ -5,7 +5,7 @@ import os
 class TestAnonymization(unittest.TestCase):
     def setUp(self):
         # Använd samma databas som i workflow
-        self.db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
+        self.db_path = os.getenv('DATABASE_PATH', 'test_users.db')
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
 
