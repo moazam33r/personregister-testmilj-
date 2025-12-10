@@ -62,15 +62,31 @@ def clear_test_data():
     print("All test data has been cleared (GDPR compliant)")
 
 def anonymize_data():
-    """GDPR Action 2: Anonymize user data"""
+    """GDPR Action 2: Anonymize user data (names + emails)"""
     db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    
-    cursor.execute('UPDATE users SET name = "Anonym Användare"')
+
+    # Hämta alla användare
+    cursor.execute('SELECT id FROM users')
+    users = cursor.fetchall()
+
+    # Anonymisera namn + skapa unika anonym-email
+    for user in users:
+        user_id = user[0]
+        anonym_email = f"anonym_{user_id}@example.com"
+
+        cursor.execute('''
+            UPDATE users
+            SET 
+                name = "Anonym Användare",
+                email = ?
+            WHERE id = ?
+        ''', (anonym_email, user_id))
+
     conn.commit()
     conn.close()
-    print("All user names have been anonymized (GDPR compliant)")
+    print("All user names and emails have been anonymized (GDPR compliant)")
 
 if __name__ == "__main__":
     init_database()
