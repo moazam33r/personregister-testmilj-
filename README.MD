@@ -7,7 +7,7 @@ Ett enkelt system för att hantera testdata på ett GDPR-kompatibelt sätt.
 - Skapa och initiera databas med testanvändare
 - Visa alla användare
 - Rensa all testdata (GDPR åtgärd 1)
-- Anonymisera användardata (GDPR åtgärd 2)
+- Anonymisera användardata (GDPR åtgärd 2)duygduf
 
 ## Installation och körning
 
