@@ -1,12 +1,18 @@
-# Personregister – Examinationsprojekt
+# Personregister i testmiljön
 
-Detta projekt uppfyller examinationskraven för personregister i testmiljö med:
-- Initiering av testdata
-- Anonymisering (GDPR-exempel)
-- Radering av användare
-- Docker-container för körning
-- CI med tester
+Ett enkelt system för att hantera testdata på ett GDPR-kompatibelt sätt.
 
-## 🚀 Starta lokalt
-```bash
-python app.py
+## Funktioner
+
+- Skapa och initiera databas med testanvändare
+- Visa alla användare
+- Rensa all testdata (GDPR åtgärd 1)
+- Anonymisera användardata (GDPR åtgärd 2)
+
+## Installation och körning
+
+### Förutsättningar
+- Docker och Docker Compose
+- Python 3.9+
+
+### Kör med Docker
