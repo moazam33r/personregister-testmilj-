@@ -2,7 +2,7 @@ import sqlite3
 import os
 
 # Use environment variable DATABASE_PATH or default to relative path 'data/test_users.db'
-db_path = os.getenv('DATABASE_PATH', 'data/test_users.db')
+db_path = os.getenv('DATABASE_PATH', 'test_users.db')
 
 # Ensure the folder exists
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
