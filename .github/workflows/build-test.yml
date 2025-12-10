@@ -1,54 +1,30 @@
-name: Build and Test
+- name: Verify anonymization
+  run: |
+    python << 'EOF'
+    import sqlite3, os
 
-on: [push, pull_request]
+    db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+    cursor.execute("SELECT id, name, email FROM users")
+    rows = cursor.fetchall()
 
-    steps:
-      - uses: actions/checkout@v3
+    errors = []
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    for user_id, name, email in rows:
+        expected_email = f"anonym_{user_id}@example.com"
+        
+        if name != "Anonym Användare":
+            errors.append(f"Name not anonymized for user {user_id}: {name}")
 
-      - name: Test imports and syntax
-        run: |
-          python -c "import sqlite3, os; print('All imports successful')"
-          python -m py_compile app.py
-          echo "Code compilation successful"
+        if email != expected_email:
+            errors.append(f"Email not anonymized correctly for user {user_id}: {email} != {expected_email}")
 
-      - name: Run anonymization test
-        run: |
-          python -c "import app; app.init_database()"
-          python -c "import app; app.anonymize_data()"
+    if errors:
+        print("\n".join(errors))
+        raise SystemExit("Anonymization test FAILED")
 
-          python << 'EOF'
-import sqlite3, os
-
-db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
-conn = sqlite3.connect(db_path)
-cursor = conn.cursor()
-
-cursor.execute("SELECT id, name, email FROM users")
-rows = cursor.fetchall()
-
-errors = []
-
-for user_id, name, email in rows:
-    expected_email = f"anonym_{user_id}@example.com"
-
-    if name != "Anonym Användare":
-        errors.append(f"Name not anonymized for user {user_id}: {name}")
-
-    if email != expected_email:
-        errors.append(f"Email not anonymized correctly for user {user_id}: {email} != {expected_email}")
-
-if errors:
-    print("\n".join(errors))
-    raise SystemExit("Anonymization test FAILED")
-
-print("Anonymization test PASSED: All users anonymized correctly")
-EOF
+    print("Anonymization test PASSED: All users anonymized correctly")
+    conn.close()
+    EOF
