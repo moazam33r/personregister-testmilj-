@@ -5,27 +5,27 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-    
-    - name: Test imports and syntax
-      run: |
-        python -c "import sqlite3, os; print('All imports successful')"
-        python -m py_compile app.py
-        echo "Code compilation successful"
+      - uses: actions/checkout@v3
 
-    - name: Run anonymization test
-      run: |
-        python -c "import app; app.init_database()"
-        python -c "import app; app.anonymize_data()"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-        python - << 'EOF'
+      - name: Test imports and syntax
+        run: |
+          python -c "import sqlite3, os; print('All imports successful')"
+          python -m py_compile app.py
+          echo "Code compilation successful"
+
+      - name: Run anonymization test
+        run: |
+          python -c "import app; app.init_database()"
+          python -c "import app; app.anonymize_data()"
+
+          python << 'EOF'
 import sqlite3, os
 
 db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
@@ -48,7 +48,7 @@ for user_id, name, email in rows:
 
 if errors:
     print("\n".join(errors))
-    raise SystemExit("❌ Anonymization test FAILED")
-else:
-    print("✅ Anonymization test PASSED: All users anonymized correctly")
+    raise SystemExit("Anonymization test FAILED")
+
+print("Anonymization test PASSED: All users anonymized correctly")
 EOF
