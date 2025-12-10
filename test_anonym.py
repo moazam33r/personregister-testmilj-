@@ -10,7 +10,9 @@ class TestAnonymization(unittest.TestCase):
         cls.db_path = os.getenv('DATABASE_PATH', 'test_users.db')
 
         # Ensure folder exists if using a subfolder
-        os.makedirs(os.path.dirname(cls.db_path), exist_ok=True)
+        dir_path = os.path.dirname(cls.db_path)
+        if dir_path:
+            os.makedirs(dir_path, exist_ok=True)
 
         # Initialize and anonymize the database before tests
         app.init_database()
