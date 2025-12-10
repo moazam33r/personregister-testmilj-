@@ -1,9 +1,14 @@
 import sqlite3
 import os
 
+# Use environment variable DATABASE_PATH or default to relative path 'data/test_users.db'
+db_path = os.getenv('DATABASE_PATH', 'data/test_users.db')
+
+# Ensure the folder exists
+os.makedirs(os.path.dirname(db_path), exist_ok=True)
+
 def init_database():
     """Initialize the database and create users table"""
-    db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
@@ -26,7 +31,6 @@ def init_database():
             ('Anna Andersson', 'anna@test.se'),
             ('Bo Bengtsson', 'bo@test.se')
         ]
-        
         cursor.executemany('INSERT INTO users (name, email) VALUES (?, ?)', test_users)
         print("Database initialized with test users")
     else:
@@ -37,7 +41,6 @@ def init_database():
 
 def display_users():
     """Display all users in the database"""
-    db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
@@ -52,7 +55,6 @@ def display_users():
 
 def clear_test_data():
     """GDPR Action 1: Clear all test data"""
-    db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
@@ -63,15 +65,14 @@ def clear_test_data():
 
 def anonymize_data():
     """GDPR Action 2: Anonymize user data (names + emails)"""
-    db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Hämta alla användare
+    # Get all users
     cursor.execute('SELECT id FROM users')
     users = cursor.fetchall()
 
-    # Anonymisera namn + skapa unika anonym-email
+    # Anonymize names + create unique anonym emails
     for user in users:
         user_id = user[0]
         anonym_email = f"anonym_{user_id}@example.com"
