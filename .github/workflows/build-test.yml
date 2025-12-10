@@ -14,17 +14,25 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Install pytest
+        run: pip install pytest
+
       - name: Test imports and syntax
         run: |
           python -c "import sqlite3, os; print('All imports successful')"
           python -m py_compile app.py
+          python -m py_compile test_anonym.py
           echo "Code compilation successful"
 
       - name: Initialize and anonymize database
+        env:
+          DATABASE_PATH: test_users.db
         run: |
           python -c "import app; app.init_database()"
           python -c "import app; app.anonymize_data()"
 
-      - name: Run anonymization unit test
+      - name: Run anonymization unit test with pytest
+        env:
+          DATABASE_PATH: test_users.db
         run: |
-          python -m unittest test_anonym.py
+          pytest -v test_anonym.py

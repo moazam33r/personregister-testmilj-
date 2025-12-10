@@ -1,18 +1,19 @@
 import sqlite3
 import os
 
-# Use environment variable DATABASE_PATH or default to relative path '/test_users.db'
+# Use environment variable DATABASE_PATH or default to relative path 'test_users.db'
 db_path = os.getenv('DATABASE_PATH', 'test_users.db')
 
-# Ensure the folder exists
-os.makedirs(os.path.dirname(db_path), exist_ok=True)
+# Only create folder if db_path has a directory
+dir_path = os.path.dirname(db_path)
+if dir_path:
+    os.makedirs(dir_path, exist_ok=True)
 
 def init_database():
     """Initialize the database and create users table"""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    # Create users table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,12 +22,10 @@ def init_database():
         )
     ''')
     
-    # Check if users already exist
     cursor.execute('SELECT COUNT(*) FROM users')
     count = cursor.fetchone()[0]
     
     if count == 0:
-        # Insert test users only if table is empty
         test_users = [
             ('Anna Andersson', 'anna@test.se'),
             ('Bo Bengtsson', 'bo@test.se')
@@ -68,19 +67,15 @@ def anonymize_data():
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Get all users
     cursor.execute('SELECT id FROM users')
     users = cursor.fetchall()
 
-    # Anonymize names + create unique anonym emails
     for user in users:
         user_id = user[0]
         anonym_email = f"anonym_{user_id}@example.com"
-
         cursor.execute('''
             UPDATE users
-            SET 
-                name = "Anonym Användare",
+            SET name = "Anonym Användare",
                 email = ?
             WHERE id = ?
         ''', (anonym_email, user_id))
@@ -93,7 +88,6 @@ if __name__ == "__main__":
     init_database()
     display_users()
     
-    # Keep the container running for testing
     print("\nContainer is running. Press Ctrl+C to exit.")
     try:
         while True:
