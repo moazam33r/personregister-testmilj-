@@ -1,11 +1,23 @@
 import unittest
 import sqlite3
 import os
+import app  # Import your app.py
 
 class TestAnonymization(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Use the same database as app.py
+        cls.db_path = os.getenv('DATABASE_PATH', 'test_users.db')
+
+        # Ensure folder exists if using a subfolder
+        os.makedirs(os.path.dirname(cls.db_path), exist_ok=True)
+
+        # Initialize and anonymize the database before tests
+        app.init_database()
+        app.anonymize_data()
+
     def setUp(self):
-        # Använd samma databas som i workflow
-        self.db_path = os.getenv('DATABASE_PATH', 'test_users.db')
+        # Connect to the database for each test
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
 
