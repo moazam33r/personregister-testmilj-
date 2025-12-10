@@ -1,6 +1,7 @@
+text
 __pycache__/
 *.pyc
-.env
-/data/*.db
-.vscode/
+*.db
+*.sqlite
 .DS_Store
+.env
