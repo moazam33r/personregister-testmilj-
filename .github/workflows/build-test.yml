@@ -1,30 +1,30 @@
-- name: Verify anonymization
-  run: |
-    python << 'EOF'
-    import sqlite3, os
+name: Build and Test
 
-    db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+on: [push, pull_request]
 
-    cursor.execute("SELECT id, name, email FROM users")
-    rows = cursor.fetchall()
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
 
-    errors = []
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    for user_id, name, email in rows:
-        expected_email = f"anonym_{user_id}@example.com"
-        
-        if name != "Anonym Användare":
-            errors.append(f"Name not anonymized for user {user_id}: {name}")
+      - name: Test imports and syntax
+        run: |
+          python -c "import sqlite3, os; print('All imports successful')"
+          python -m py_compile app.py
+          echo "Code compilation successful"
 
-        if email != expected_email:
-            errors.append(f"Email not anonymized correctly for user {user_id}: {email} != {expected_email}")
+      - name: Initialize and anonymize database
+        run: |
+          python -c "import app; app.init_database()"
+          python -c "import app; app.anonymize_data()"
 
-    if errors:
-        print("\n".join(errors))
-        raise SystemExit("Anonymization test FAILED")
-
-    print("Anonymization test PASSED: All users anonymized correctly")
-    conn.close()
-    EOF
+      - name: Run anonymization unit test
+        run: |
+          python -m unittest test_anonym.py
