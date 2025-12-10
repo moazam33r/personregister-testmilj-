@@ -4,7 +4,7 @@ import os
 # Use environment variable DATABASE_PATH or default to relative path 'test_users.db'
 db_path = os.getenv('DATABASE_PATH', 'test_users.db')
 
-# Only create folder if db_path has a directory
+# Om Sökvägen innehåller kataloger, skapa dem automatiskt
 dir_path = os.path.dirname(db_path)
 if dir_path:
     os.makedirs(dir_path, exist_ok=True)
@@ -13,7 +13,7 @@ def init_database():
     """Initialize the database and create users table"""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    
+    # Skapar tabellen med ID , NAMN och EMAIL
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,10 +21,10 @@ def init_database():
             email TEXT NOT NULL
         )
     ''')
-    
+    #Räknar antal användare i tabellen
     cursor.execute('SELECT COUNT(*) FROM users')
     count = cursor.fetchone()[0]
-    
+    # Om tabellen är tom, lägg till testanvändare
     if count == 0:
         test_users = [
             ('Anna Andersson', 'anna@test.se'),
@@ -56,7 +56,7 @@ def clear_test_data():
     """GDPR Action 1: Clear all test data"""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    
+    # Tar bort alla rader i användartabellen
     cursor.execute('DELETE FROM users')
     conn.commit()
     conn.close()
@@ -69,7 +69,7 @@ def anonymize_data():
 
     cursor.execute('SELECT id FROM users')
     users = cursor.fetchall()
-
+    # Anonymiserar namn och e-post för varje användare
     for user in users:
         user_id = user[0]
         anonym_email = f"anonym_{user_id}@example.com"
@@ -83,12 +83,14 @@ def anonymize_data():
     conn.commit()
     conn.close()
     print("All user names and emails have been anonymized (GDPR compliant)")
-
+    
 if __name__ == "__main__":
+    #startar programmet och initierar databasen att visa användare
     init_database()
     display_users()
     
     print("\nContainer is running. Press Ctrl+C to exit.")
+    #Håller programet igång tills användaren avbryter det 
     try:
         while True:
             pass

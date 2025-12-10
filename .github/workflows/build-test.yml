@@ -5,9 +5,11 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    # kör testerna i en virtuell Ununtu-miljö 
     
     steps:
       - uses: actions/checkout@v3
+      #hämtar koden från GitHub-repot
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -16,6 +18,7 @@ jobs:
 
       - name: Install pytest
         run: pip install pytest
+        # installerar pytest för att köra testerna
 
       - name: Test imports and syntax
         run: |
@@ -23,6 +26,7 @@ jobs:
           python -m py_compile app.py
           python -m py_compile test_anonym.py
           echo "Code compilation successful"
+        # Säkerställer att alla nödvändiga moduler kan importeras och att koden kompileras utan syntaxfel.
 
       - name: Initialize and anonymize database
         env:
@@ -30,9 +34,11 @@ jobs:
         run: |
           python -c "import app; app.init_database()"
           python -c "import app; app.anonymize_data()"
+        # Initierar databasen och kör anonymiseringsfunktionen innan testerna körs
 
       - name: Run anonymization unit test with pytest
         env:
           DATABASE_PATH: test_users.db
         run: |
           pytest -v test_anonym.py
+        # Kör enhetstesterna för anonymiseringsfunktionen med pytest
